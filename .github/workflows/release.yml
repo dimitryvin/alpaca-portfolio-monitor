@@ -68,3 +68,31 @@ jobs:
             gh release create "$GITHUB_REF_NAME" "$dmg" \
               --title "Alpaca Monitor $version" --generate-notes
           fi
+
+      - name: Bump Homebrew cask
+        env:
+          TAP_DEPLOY_KEY: ${{ secrets.TAP_DEPLOY_KEY }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          dmg="AlpacaMonitor-$version.dmg"
+          sha="$(shasum -a 256 "$dmg" | awk '{print $1}')"
+
+          mkdir -p ~/.ssh
+          printf '%s\n' "$TAP_DEPLOY_KEY" > ~/.ssh/tap_key
+          chmod 600 ~/.ssh/tap_key
+          export GIT_SSH_COMMAND="ssh -i ~/.ssh/tap_key -o StrictHostKeyChecking=accept-new"
+
+          git clone git@github.com:dimitryvin/homebrew-tap.git tap
+          cask="tap/Casks/alpaca-portfolio-monitor.rb"
+          /usr/bin/sed -i '' -E "s/^  version \".*\"/  version \"$version\"/" "$cask"
+          /usr/bin/sed -i '' -E "s/^  sha256 \".*\"/  sha256 \"$sha\"/" "$cask"
+
+          cd tap
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet; then
+            echo "cask already up to date"
+          else
+            git commit -am "alpaca-portfolio-monitor $version"
+            git push origin HEAD:master
+          fi
