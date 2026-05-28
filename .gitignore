@@ -1,0 +1,16 @@
+# Generated Xcode project (recreate with `xcodegen generate`)
+*.xcodeproj/
+
+# Xcode user data & build output
+xcuserdata/
+DerivedData/
+build/
+*.xcuserstate
+
+# macOS
+.DS_Store
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Package.resolved
