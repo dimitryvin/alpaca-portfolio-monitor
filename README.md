@@ -6,6 +6,15 @@ popover with an equity chart, key stats, and your open positions.
 
 > **Read-only.** The app only issues `GET` requests to Alpaca and never places trades.
 
+## Download
+
+Grab the latest `.dmg` from [Releases](https://github.com/dimitryvin/alpaca-portfolio-monitor/releases),
+open it, and drag the app to **Applications**. The build isn't notarized, so the first launch is
+blocked by Gatekeeper — right-click the app → **Open**, or run
+`xattr -dr com.apple.quarantine /Applications/AlpacaPortfolioMonitor.app`.
+
+To build a release `.dmg` yourself: `scripts/release.sh 1.0.0` (add `--publish` to upload to GitHub).
+
 ## Features
 
 - Menu bar text: portfolio value + today's change %, tinted green/red
