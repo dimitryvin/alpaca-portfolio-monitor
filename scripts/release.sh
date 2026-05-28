@@ -48,14 +48,14 @@ if [ "${2:-}" = "--publish" ]; then
   echo "==> Tagging $tag and creating GitHub release"
   git tag -f "$tag"
   git push -f origin "$tag"
-  notes=$(cat <<NOTES
+  notes=$(cat <<'NOTES'
 Read-only macOS menu bar app for monitoring your Alpaca portfolio.
 
 ### Install
 1. Open the .dmg and drag **AlpacaPortfolioMonitor** to **Applications**.
-2. Because this build isn't notarized, macOS Gatekeeper will block it the first time.
-   Right-click the app in Applications → **Open** → **Open**, or run:
-   \`xattr -dr com.apple.quarantine /Applications/AlpacaPortfolioMonitor.app\`
+2. This build is not notarized, so macOS Gatekeeper blocks it the first time.
+   Right-click the app in Applications, choose **Open**, then **Open** again, or run:
+   `xattr -dr com.apple.quarantine /Applications/AlpacaPortfolioMonitor.app`
 3. Launch it, enter your Alpaca **live** API key + secret, and (optionally) enable
    **Open at Login** from the gear menu.
 NOTES
