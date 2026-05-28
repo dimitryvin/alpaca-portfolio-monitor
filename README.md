@@ -20,7 +20,13 @@ realized P/L.
 
 ## Download
 
-Grab the latest `.dmg` from [Releases](https://github.com/dimitryvin/alpaca-portfolio-monitor/releases),
+Install with [Homebrew](https://brew.sh):
+
+```bash
+brew install --cask dimitryvin/tap/alpaca-portfolio-monitor
+```
+
+Or grab the latest `.dmg` from [Releases](https://github.com/dimitryvin/alpaca-portfolio-monitor/releases),
 open it, and drag the app to **Applications**. Builds are signed with a Developer ID and
 notarized by Apple, so they open normally.
 
