@@ -2,8 +2,17 @@ import SwiftUI
 
 /// The popover shown when the menu bar item is clicked: chart, key stats,
 /// positions, and a footer with refresh state and account controls.
+/// Which section of the popover is visible.
+enum PopoverTab: String, CaseIterable, Identifiable {
+    case portfolio = "Portfolio"
+    case trades = "Trades"
+    var id: String { rawValue }
+    var label: String { rawValue }
+}
+
 struct PopoverView: View {
     @Environment(PortfolioStore.self) private var store
+    @State private var tab: PopoverTab = .portfolio
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -15,11 +24,25 @@ struct PopoverView: View {
                     .foregroundStyle(.red)
             }
 
-            PortfolioChartView()
-            Divider()
-            KeyStatsView()
-            Divider()
-            PositionsListView()
+            Picker("View", selection: $tab) {
+                ForEach(PopoverTab.allCases) { tab in
+                    Text(tab.label).tag(tab)
+                }
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+
+            switch tab {
+            case .portfolio:
+                PortfolioChartView()
+                Divider()
+                KeyStatsView()
+                Divider()
+                PositionsListView()
+            case .trades:
+                TradesListView()
+            }
+
             Divider()
             footer
         }
@@ -58,7 +81,10 @@ struct PopoverView: View {
             }
             Spacer()
             Button {
-                Task { await store.refresh() }
+                Task {
+                    await store.refresh()
+                    if store.tradesLoaded { await store.loadTrades(force: true) }
+                }
             } label: {
                 Image(systemName: "arrow.clockwise")
             }
@@ -66,6 +92,11 @@ struct PopoverView: View {
             .help("Refresh now")
 
             Menu {
+                Toggle("Open at Login", isOn: Binding(
+                    get: { LaunchAtLogin.isEnabled },
+                    set: { LaunchAtLogin.set($0) }
+                ))
+                Divider()
                 Button("Change API Keys…") { store.signOut() }
                 Divider()
                 Button("Quit") { NSApplication.shared.terminate(nil) }

@@ -57,6 +57,34 @@ struct AlpacaClient: Sendable {
         try await get(path: "/v2/positions", query: [], as: [Position].self)
     }
 
+    /// Fetches all fill activities (executed trades), paging through results.
+    func fetchActivities() async throws -> [Activity] {
+        let pageSize = 100
+        var all: [Activity] = []
+        var pageToken: String?
+
+        repeat {
+            var query = [
+                URLQueryItem(name: "page_size", value: String(pageSize)),
+                URLQueryItem(name: "direction", value: "asc"),
+            ]
+            if let pageToken {
+                query.append(URLQueryItem(name: "page_token", value: pageToken))
+            }
+            let page = try await get(
+                path: "/v2/account/activities/FILL",
+                query: query,
+                as: [Activity].self
+            )
+            all.append(contentsOf: page)
+            // Alpaca pages by passing the last item's id as the next page_token.
+            pageToken = page.count == pageSize ? page.last?.id : nil
+            if all.count > 5000 { break } // safety cap
+        } while pageToken != nil
+
+        return all
+    }
+
     // MARK: - Request plumbing
 
     private func get<T: Decodable>(

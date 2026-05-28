@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import OSLog
 
 /// Central observable state for the app: holds credentials, fetched data, the
 /// selected chart range, and drives periodic refreshes.
@@ -17,6 +18,17 @@ final class PortfolioStore {
     private(set) var needsReauth = false
     private(set) var lastUpdated: Date?
 
+    // Trades tab state (loaded lazily when the tab is first shown).
+    private(set) var trades: [Trade] = []
+    private(set) var tradesLoaded = false
+    private(set) var isLoadingTrades = false
+    private(set) var tradesError: String?
+
+    /// Total realized P/L across all sells that had a known cost basis.
+    var totalRealizedPL: Double {
+        trades.compactMap(\.realizedPL).reduce(0, +)
+    }
+
     var selectedRange: ChartRange = .day {
         didSet {
             guard oldValue != selectedRange else { return }
@@ -30,9 +42,17 @@ final class PortfolioStore {
     private let refreshInterval: TimeInterval
     private var timerTask: Task<Void, Never>?
 
+    private static let log = Logger(
+        subsystem: "com.alpacamonitor.AlpacaPortfolioMonitor",
+        category: "refresh"
+    )
+
     init(refreshInterval: TimeInterval = 60) {
         self.refreshInterval = refreshInterval
         self.credentials = KeychainStore.load()
+        // Begin fetching immediately at launch so the menu bar shows the value
+        // and change without the user having to open the popover first.
+        start()
     }
 
     // MARK: - Credential lifecycle
@@ -58,9 +78,38 @@ final class PortfolioStore {
         account = nil
         history = nil
         positions = []
+        trades = []
+        tradesLoaded = false
+        tradesError = nil
         errorMessage = nil
         needsReauth = false
         lastUpdated = nil
+    }
+
+    // MARK: - Trades
+
+    /// Loads fill activities and builds the trades list with realized P/L.
+    /// No-op if already loaded unless `force` is set.
+    func loadTrades(force: Bool = false) async {
+        guard let credentials else { return }
+        if tradesLoaded && !force { return }
+        isLoadingTrades = true
+        tradesError = nil
+        let client = AlpacaClient(credentials: credentials)
+        do {
+            let activities = try await client.fetchActivities()
+            self.trades = TradeBuilder.build(from: activities)
+            self.tradesLoaded = true
+            Self.log.info("trades loaded: \(self.trades.count, privacy: .public)")
+        } catch AlpacaError.unauthorized {
+            self.tradesError = AlpacaError.unauthorized.errorDescription
+            self.needsReauth = true
+        } catch {
+            self.tradesError = (error as? LocalizedError)?.errorDescription
+                ?? error.localizedDescription
+            Self.log.error("trades load failed: \(error.localizedDescription, privacy: .public)")
+        }
+        isLoadingTrades = false
     }
 
     // MARK: - Loading
@@ -90,12 +139,15 @@ final class PortfolioStore {
             self.positions = try await positions
             self.lastUpdated = Date()
             self.needsReauth = false
+            Self.log.info("refresh ok: positions=\(self.positions.count, privacy: .public), historyPoints=\(self.history?.points.count ?? 0, privacy: .public)")
         } catch AlpacaError.unauthorized {
             self.errorMessage = AlpacaError.unauthorized.errorDescription
             self.needsReauth = true
+            Self.log.error("refresh unauthorized")
         } catch {
             self.errorMessage = (error as? LocalizedError)?.errorDescription
                 ?? error.localizedDescription
+            Self.log.error("refresh failed: \(error.localizedDescription, privacy: .public)")
         }
         isLoading = false
     }

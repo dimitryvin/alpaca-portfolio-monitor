@@ -20,13 +20,14 @@ struct PositionsListView: View {
                     .foregroundStyle(.secondary)
             } else {
                 ScrollView {
-                    VStack(spacing: 6) {
+                    VStack(spacing: 8) {
                         ForEach(sorted) { position in
                             row(position)
                         }
                     }
+                    .padding(.trailing, 2) // breathing room for the scroll indicator
                 }
-                .frame(maxHeight: 160)
+                .frame(height: 168)
             }
         }
     }
@@ -44,13 +45,13 @@ struct PositionsListView: View {
             VStack(alignment: .trailing, spacing: 1) {
                 Text(CurrencyFormatter.full.string(from: position.marketValue))
                     .font(.callout)
+                // Unrealized gain/loss on the position since entry (not today's move).
                 HStack(spacing: 4) {
-                    Text(PercentFormatter.signed(position.changeTodayPct))
+                    Text(PercentFormatter.signed(position.unrealizedPLPct))
                     Text(CurrencyFormatter.full.signedString(from: position.unrealizedPL))
-                        .foregroundStyle(.secondary)
                 }
                 .font(.caption2)
-                .foregroundStyle(changeColor(position.changeTodayPct))
+                .foregroundStyle(changeColor(position.unrealizedPL))
             }
         }
         .padding(.vertical, 2)
