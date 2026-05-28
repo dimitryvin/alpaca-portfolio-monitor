@@ -1,10 +1,22 @@
+<p align="center">
+  <img src="docs/icon.png" width="120" alt="Alpaca Monitor icon">
+</p>
+
 # Alpaca Portfolio Monitor
+
+[![Release](https://github.com/dimitryvin/alpaca-portfolio-monitor/actions/workflows/release.yml/badge.svg)](https://github.com/dimitryvin/alpaca-portfolio-monitor/actions/workflows/release.yml)
 
 A lightweight macOS **menu bar** app that shows your [Alpaca](https://alpaca.markets)
 brokerage portfolio value and today's change at a glance. Click the menu bar item for a
-popover with an equity chart, key stats, and your open positions.
+popover with an equity chart, key stats, your open positions, and your trade history with
+realized P/L.
 
 > **Read-only.** The app only issues `GET` requests to Alpaca and never places trades.
+
+<p align="center">
+  <img src="docs/menubar.png" height="24" alt="Menu bar value"><br><br>
+  <img src="docs/portfolio.png" width="320" alt="Portfolio popover">
+</p>
 
 ## Download
 
@@ -20,15 +32,22 @@ SIGN_ID="Developer ID Application: Your Name (TEAMID)" NOTARY_PROFILE="AlpacaNot
   scripts/release.sh 1.0.0 --publish
 ```
 
+Or push a `v*` tag to build, sign, notarize, and publish automatically via GitHub Actions
+(`.github/workflows/release.yml`). Configure the required secrets once with
+`scripts/setup-ci-secrets.sh`, then `git tag v1.1.0 && git push origin v1.1.0`.
+
 ## Features
 
 - Menu bar text: portfolio value + today's change %, tinted green/red
-  (e.g. `$12,345  ▲1.2%`).
-- Popover with:
+  (e.g. `$12,345  ▲1.2%`), shown immediately on launch.
+- **Portfolio** tab:
   - Equity chart and a range picker (1D / 1W / 1M / 3M / 1Y / All).
   - Key stats: equity, today's P/L ($ and %), cash, buying power.
-  - Positions list: market value, today's change, and unrealized P/L per holding.
+  - Positions list: market value and **unrealized P/L since entry** per holding.
+- **Trades** tab: executed fills, newest first, with **realized P/L on sells**
+  (computed from average-cost basis) and a total realized P/L.
 - Auto-refreshes every 60 seconds, plus a manual refresh button.
+- **Open at Login** toggle (via `SMAppService`).
 - Credentials stored securely in the macOS Keychain (never logged).
 
 ## Requirements
