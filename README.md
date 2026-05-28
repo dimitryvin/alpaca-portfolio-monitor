@@ -9,11 +9,16 @@ popover with an equity chart, key stats, and your open positions.
 ## Download
 
 Grab the latest `.dmg` from [Releases](https://github.com/dimitryvin/alpaca-portfolio-monitor/releases),
-open it, and drag the app to **Applications**. The build isn't notarized, so the first launch is
-blocked by Gatekeeper — right-click the app → **Open**, or run
-`xattr -dr com.apple.quarantine /Applications/AlpacaPortfolioMonitor.app`.
+open it, and drag the app to **Applications**. Builds are signed with a Developer ID and
+notarized by Apple, so they open normally.
 
 To build a release `.dmg` yourself: `scripts/release.sh 1.0.0` (add `--publish` to upload to GitHub).
+To produce a signed + notarized build, set `SIGN_ID` and `NOTARY_PROFILE` first:
+
+```bash
+SIGN_ID="Developer ID Application: Your Name (TEAMID)" NOTARY_PROFILE="AlpacaNotary" \
+  scripts/release.sh 1.0.0 --publish
+```
 
 ## Features
 
