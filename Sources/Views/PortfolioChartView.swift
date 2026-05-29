@@ -27,17 +27,12 @@ struct PortfolioChartView: View {
         let points = store.history?.points ?? []
         if points.count >= 2 {
             let tint = (store.history?.overallChange ?? 0) >= 0 ? Color.green : Color.red
+            let (lowerBound, upperBound) = yDomain(for: points)
             Chart(points) { point in
-                LineMark(
-                    x: .value("Time", point.date),
-                    y: .value("Equity", point.equity)
-                )
-                .foregroundStyle(tint)
-                .interpolationMethod(.monotone)
-
                 AreaMark(
                     x: .value("Time", point.date),
-                    y: .value("Equity", point.equity)
+                    yStart: .value("Min", lowerBound),
+                    yEnd: .value("Equity", point.equity)
                 )
                 .foregroundStyle(
                     .linearGradient(
@@ -47,8 +42,15 @@ struct PortfolioChartView: View {
                     )
                 )
                 .interpolationMethod(.monotone)
+
+                LineMark(
+                    x: .value("Time", point.date),
+                    y: .value("Equity", point.equity)
+                )
+                .foregroundStyle(tint)
+                .interpolationMethod(.monotone)
             }
-            .chartYScale(domain: .automatic(includesZero: false))
+            .chartYScale(domain: lowerBound...upperBound)
             .chartXAxis {
                 AxisMarks(values: .automatic(desiredCount: 4))
             }
@@ -61,5 +63,16 @@ struct PortfolioChartView: View {
                         .foregroundStyle(.secondary)
                 )
         }
+    }
+
+    /// A tight y-axis range that frames the data with ~12% padding, so intraday
+    /// movement is visible instead of being flattened against a zero baseline.
+    private func yDomain(for points: [PortfolioPoint]) -> (Double, Double) {
+        let values = points.map(\.equity)
+        let lo = values.min() ?? 0
+        let hi = values.max() ?? 0
+        let span = hi - lo
+        let pad = span > 0 ? span * 0.12 : max(hi * 0.01, 1)
+        return (lo - pad, hi + pad)
     }
 }
