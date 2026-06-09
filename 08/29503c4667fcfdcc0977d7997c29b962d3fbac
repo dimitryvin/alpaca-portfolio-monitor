@@ -1,0 +1,35 @@
+.gitignore
+  s_9dd644e4289059::t_8ba313abba9ec4 20-22
+Sources/Views/TradesListView.swift
+  s_9dd644e4289059::t_0a0b45e58b226c 31-33
+  s_9dd644e4289059::t_d9757e4128dc95 43-45
+Tests/TradeNotifierTests.swift
+  s_9dd644e4289059::t_3df1b297ab16f6 1-47
+project.yml
+  s_9dd644e4289059::t_82729d13050f8c 11
+Sources/Services/TradeNotifier.swift
+  s_9dd644e4289059::t_568cfc8684a201 1-69
+Sources/Services/PortfolioStore.swift
+  s_9dd644e4289059::t_adbab4f442b46e 219
+  s_9dd644e4289059::t_0b7ca62cc579c5 92-93
+  s_9dd644e4289059::t_afdcb398035083 74,77
+  s_9dd644e4289059::t_4b52aba13f86ac 27-32
+  s_9dd644e4289059::t_031a1e2975e143 102,109,123-160
+  s_9dd644e4289059::t_b42dd55433af3f 168,171-175
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "0829503c4667fcfdcc0977d7997c29b962d3fbac",
+  "prompts": {},
+  "sessions": {
+    "s_9dd644e4289059": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "64c6456d-bf0b-42a2-a358-9070ec8327e8",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Dimitry Vinogradov <dimitryvin@gmail.com>"
+    }
+  }
+}
