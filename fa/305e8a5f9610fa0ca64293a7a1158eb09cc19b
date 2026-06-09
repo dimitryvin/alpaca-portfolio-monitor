@@ -1,0 +1,22 @@
+Sources/App/Info.plist
+  s_9dd644e4289059::t_2e5fa6dcd6a22c 20,22
+project.yml
+  s_9dd644e4289059::t_8106b8c94e5f6e 11
+  s_9dd644e4289059::t_805187ae0f4487 38-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "fa305e8a5f9610fa0ca64293a7a1158eb09cc19b",
+  "prompts": {},
+  "sessions": {
+    "s_9dd644e4289059": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "64c6456d-bf0b-42a2-a358-9070ec8327e8",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Dimitry Vinogradov <dimitryvin@gmail.com>"
+    }
+  }
+}
