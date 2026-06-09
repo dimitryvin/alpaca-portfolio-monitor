@@ -25,7 +25,8 @@ struct PortfolioChartView: View {
     @ViewBuilder
     private var chart: some View {
         let points = store.history?.points ?? []
-        if points.count >= 2 {
+        if points.count >= 2,
+           let xRange = ChartDomain.x(for: points, range: store.selectedRange) {
             let tint = (store.history?.overallChange ?? 0) >= 0 ? Color.green : Color.red
             let (lowerBound, upperBound) = yDomain(for: points)
             Chart(points) { point in
@@ -51,6 +52,7 @@ struct PortfolioChartView: View {
                 .interpolationMethod(.monotone)
             }
             .chartYScale(domain: lowerBound...upperBound)
+            .chartXScale(domain: xRange)
             .chartXAxis {
                 AxisMarks(values: .automatic(desiredCount: 4))
             }
