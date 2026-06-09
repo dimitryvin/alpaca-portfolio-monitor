@@ -17,3 +17,6 @@ build/
 .build/
 .swiftpm/
 Package.resolved
+
+# Serena MCP project cache
+.serena/

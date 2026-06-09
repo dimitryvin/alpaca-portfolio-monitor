@@ -28,7 +28,9 @@ struct TradesListView: View {
                 .frame(height: 372)
             }
         }
-        .task { await store.loadTrades() }
+        // Refresh whenever the Trades tab is selected (the view is recreated on
+        // each switch), so the list is current without a manual refresh.
+        .task { await store.loadTrades(force: true) }
     }
 
     // MARK: - Pieces
@@ -38,6 +40,9 @@ struct TradesListView: View {
             Text("Trades")
                 .font(.caption)
                 .foregroundStyle(.secondary)
+            if store.isLoadingTrades && !store.trades.isEmpty {
+                ProgressView().controlSize(.small)
+            }
             Spacer()
             if !store.trades.isEmpty {
                 Text("Realized P/L: \(CurrencyFormatter.full.signedString(from: store.totalRealizedPL))")
