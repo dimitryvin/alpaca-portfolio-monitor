@@ -1,0 +1,24 @@
+Sources/Views/ChartDomain.swift
+  s_9dd644e4289059::t_76485b04024a6c 1-31
+Tests/ChartDomainTests.swift
+  s_9dd644e4289059::t_1955c281b4fcf2 1-51
+Sources/Views/PortfolioChartView.swift
+  s_9dd644e4289059::t_b16e09caee78bf 55
+  s_9dd644e4289059::t_e00dd5f03282f5 28-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "021683214496dde7c0436475b3ca820f58adda7e",
+  "prompts": {},
+  "sessions": {
+    "s_9dd644e4289059": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "64c6456d-bf0b-42a2-a358-9070ec8327e8",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Dimitry Vinogradov <dimitryvin@gmail.com>"
+    }
+  }
+}
