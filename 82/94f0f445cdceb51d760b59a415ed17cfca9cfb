@@ -1,0 +1,39 @@
+Sources/Views/PositionsListView.swift
+  s_3765beaea882a0::t_a5c36a7ac9c794 65-72
+  s_3765beaea882a0::t_d830570caae469 36-37,39-44
+  s_3765beaea882a0::t_8ea58292cb1ec8 47
+Sources/Views/OptionKindChip.swift
+  s_3765beaea882a0::t_3ac67c7d92fc07 1-20
+Sources/Models/OptionSymbol.swift
+  s_3765beaea882a0::t_fb4c2c8794cdb2 1-76,91-119
+  s_3765beaea882a0::t_1eacfc7e04ee90 77-90
+Sources/Views/TradesListView.swift
+  s_3765beaea882a0::t_9ebd44ccb5b3c8 73-74,77,79,82
+  s_3765beaea882a0::t_1d9db6f647ea01 108-115
+  s_3765beaea882a0::t_4f199fe04c2d9d 85
+Tests/TradeBuilderTests.swift
+  s_3765beaea882a0::t_cc7e5bad401fee 35-55
+Sources/Services/TradeBuilder.swift
+  s_3765beaea882a0::t_ac48b0ded56d5b 38-42
+Sources/Models/Trade.swift
+  s_3765beaea882a0::t_57fe133d3b73cb 18-20
+Tests/OptionSymbolTests.swift
+  s_3765beaea882a0::t_2e78472b224403 1-50,58-78
+  s_3765beaea882a0::t_6d22494b8854b3 51-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "8294f0f445cdceb51d760b59a415ed17cfca9cfb",
+  "prompts": {},
+  "sessions": {
+    "s_3765beaea882a0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2fca9df0-cde0-4e54-ad85-995fdf803d2b",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Dimitry Vinogradov <dimitryvin@gmail.com>"
+    }
+  }
+}
