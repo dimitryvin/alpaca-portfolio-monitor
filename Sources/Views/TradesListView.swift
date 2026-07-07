@@ -70,16 +70,19 @@ struct TradesListView: View {
     }
 
     private func row(_ trade: Trade) -> some View {
-        HStack(alignment: .center) {
+        let option = OptionSymbol(trade.symbol)
+        return HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 6) {
-                    Text(trade.symbol)
+                    Text(option?.underlying ?? trade.symbol)
                         .font(.system(.callout, design: .rounded).weight(.semibold))
+                    if let option { OptionKindChip(kind: option.kind) }
                     sideBadge(trade.isBuy)
                 }
-                Text(trade.date.formatted(.dateTime.month().day().hour().minute()))
+                Text(subtitle(for: trade, option: option))
                     .font(.caption2)
                     .foregroundStyle(.secondary)
+                    .lineLimit(1)
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 2) {
@@ -100,6 +103,14 @@ struct TradesListView: View {
             }
         }
         .padding(.vertical, 1)
+    }
+
+    /// Second line: fill date/time for stocks; strike + expiration prepended for
+    /// options (e.g. "$14 · Exp Jul 10 · Jul 7, 7:15 AM").
+    private func subtitle(for trade: Trade, option: OptionSymbol?) -> String {
+        let filled = trade.date.formatted(.dateTime.month().day().hour().minute())
+        guard let option else { return filled }
+        return "\(option.strikeText) · Exp \(option.expirationText) · \(filled)"
     }
 
     private func sideBadge(_ isBuy: Bool) -> some View {

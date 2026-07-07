@@ -15,6 +15,7 @@ struct Trade: Identifiable, Equatable, Sendable {
     let realizedPL: Double?
     let realizedPLPct: Double?
 
-    /// Total cash value of the fill (qty × price).
-    var value: Double { qty * price }
+    /// Total cash value of the fill: qty × price, scaled by the contract
+    /// multiplier (options are quoted per share but trade in 100-share contracts).
+    var value: Double { qty * price * OptionSymbol.contractMultiplier(for: symbol) }
 }

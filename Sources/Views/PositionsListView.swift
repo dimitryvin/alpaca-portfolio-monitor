@@ -33,13 +33,18 @@ struct PositionsListView: View {
     }
 
     private func row(_ position: Position) -> some View {
-        HStack {
+        let option = OptionSymbol(position.symbol)
+        return HStack {
             VStack(alignment: .leading, spacing: 1) {
-                Text(position.symbol)
-                    .font(.system(.callout, design: .rounded).weight(.semibold))
-                Text("\(formattedQty(position.qty)) sh")
+                HStack(spacing: 6) {
+                    Text(option?.underlying ?? position.symbol)
+                        .font(.system(.callout, design: .rounded).weight(.semibold))
+                    if let option { OptionKindChip(kind: option.kind) }
+                }
+                Text(subtitle(for: position, option: option))
                     .font(.caption2)
                     .foregroundStyle(.secondary)
+                    .lineLimit(1)
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 1) {
@@ -55,6 +60,14 @@ struct PositionsListView: View {
             }
         }
         .padding(.vertical, 2)
+    }
+
+    /// Second line: share count for stocks; contract count + strike + expiration
+    /// for options (e.g. "9 contracts · $14 · Exp Jul 10").
+    private func subtitle(for position: Position, option: OptionSymbol?) -> String {
+        guard let option else { return "\(formattedQty(position.qty)) sh" }
+        let unit = position.qty == 1 ? "contract" : "contracts"
+        return "\(formattedQty(position.qty)) \(unit) · \(option.strikeText) · Exp \(option.expirationText)"
     }
 
     private func formattedQty(_ qty: Double) -> String {

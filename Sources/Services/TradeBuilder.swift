@@ -35,7 +35,11 @@ enum TradeBuilder {
                 if held > epsilon {
                     let avgCost = heldCost[symbol, default: 0] / held
                     let qtySold = min(qty, held)
-                    let realizedPL = (price - avgCost) * qtySold
+                    // Cost basis is tracked per share; scale the dollar P/L by the
+                    // contract multiplier so options (100 shares/contract) are
+                    // correct. The percentage is unaffected (the multiplier cancels).
+                    let multiplier = OptionSymbol.contractMultiplier(for: symbol)
+                    let realizedPL = (price - avgCost) * qtySold * multiplier
                     let realizedPLPct = avgCost != 0 ? (price - avgCost) / avgCost * 100 : nil
                     heldQty[symbol] = held - qtySold
                     heldCost[symbol] = (heldCost[symbol] ?? 0) - avgCost * qtySold
