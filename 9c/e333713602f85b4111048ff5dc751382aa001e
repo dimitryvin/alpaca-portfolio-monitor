@@ -1,0 +1,19 @@
+project.yml
+  s_3765beaea882a0::t_36331288cccd1e 11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "9ce333713602f85b4111048ff5dc751382aa001e",
+  "prompts": {},
+  "sessions": {
+    "s_3765beaea882a0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2fca9df0-cde0-4e54-ad85-995fdf803d2b",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Dimitry Vinogradov <dimitryvin@gmail.com>"
+    }
+  }
+}
