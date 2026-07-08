@@ -68,10 +68,15 @@ targets:
     dependencies:
       - package: ComposableArchitecture
         product: ComposableArchitecture
+    # DEVELOPMENT_TEAM is supplied by a gitignored xcconfig (see Config/Signing.xcconfig.example)
+    # so the Team ID stays out of version control. Xcode Cloud generates it from the
+    # DEVELOPMENT_TEAM environment variable in ci_scripts/ci_post_clone.sh.
+    configFiles:
+      Debug: Config/Signing.xcconfig
+      Release: Config/Signing.xcconfig
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.alpacamonitor.mobile
-        DEVELOPMENT_TEAM: GFUCLJHK34
+        PRODUCT_BUNDLE_IDENTIFIER: com.dimitryvin.alpacamobile
         CODE_SIGN_STYLE: Automatic
         INFOPLIST_FILE: iOSApp/App/Info.plist
         TARGETED_DEVICE_FAMILY: "1"
@@ -99,7 +104,7 @@ targets:
       - target: AlpacaMonitorMobile
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.alpacamonitor.mobile.tests
+        PRODUCT_BUNDLE_IDENTIFIER: com.dimitryvin.alpacamobile.tests
         GENERATE_INFOPLIST_FILE: YES
 
 schemes:

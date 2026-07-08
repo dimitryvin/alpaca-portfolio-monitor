@@ -7,7 +7,7 @@ import Security
 ///
 /// Credentials are never written to logs or `UserDefaults`.
 enum KeychainCredentialsStore {
-    private static let service = "com.alpacamonitor.mobile"
+    private static let service = "com.dimitryvin.alpacamobile"
     private static let account = "alpaca-credentials"
 
     static func save(_ credentials: Credentials) throws {

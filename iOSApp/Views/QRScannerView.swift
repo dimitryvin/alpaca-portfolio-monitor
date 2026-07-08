@@ -31,7 +31,7 @@ final class QRScannerViewController: UIViewController {
     var onFound: (@MainActor (String) -> Void)?
 
     private let session = AVCaptureSession()
-    private let sessionQueue = DispatchQueue(label: "com.alpacamonitor.mobile.qr-session")
+    private let sessionQueue = DispatchQueue(label: "com.dimitryvin.alpacamobile.qr-session")
     private var previewLayer: AVCaptureVideoPreviewLayer?
     private let delegate = MetadataDelegate()
     private var hasReported = false

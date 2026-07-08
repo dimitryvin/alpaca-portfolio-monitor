@@ -117,6 +117,7 @@ available (e.g. in the Simulator, which has no camera).
 **Build & run (Simulator):**
 
 ```bash
+cp Config/Signing.xcconfig.example Config/Signing.xcconfig   # first time only (see below)
 xcodegen generate
 xcodebuild build -scheme AlpacaMonitorMobile \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -skipMacroValidation
@@ -124,11 +125,15 @@ xcodebuild test  -scheme AlpacaMonitorMobile \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -skipMacroValidation
 ```
 
+`xcodegen generate` requires `Config/Signing.xcconfig` to exist (it's gitignored — see
+[TestFlight](#testflight-via-xcode-cloud) below); the placeholder from the example file is
+fine for Simulator builds.
+
 To preview the UI with canned data (no account needed), launch with `ALPACA_DEMO=1`
 (DEBUG-only; stripped from release builds):
 
 ```bash
-SIMCTL_CHILD_ALPACA_DEMO=1 xcrun simctl launch booted com.alpacamonitor.mobile
+SIMCTL_CHILD_ALPACA_DEMO=1 xcrun simctl launch booted com.dimitryvin.alpacamobile
 ```
 
 ### TestFlight via Xcode Cloud
@@ -136,17 +141,26 @@ SIMCTL_CHILD_ALPACA_DEMO=1 xcrun simctl launch booted com.alpacamonitor.mobile
 The iOS target is set up for [Xcode Cloud](https://developer.apple.com/xcode-cloud/):
 `ci_scripts/ci_post_clone.sh` runs `xcodegen generate` after each clone (the `.xcodeproj`
 is generated, not committed), and the `AlpacaMonitorMobile` scheme is shared. It signs
-under personal team **`GFUCLJHK34`** with automatic signing (bundle id
-`com.alpacamonitor.mobile`).
+under your Apple Developer team with automatic signing (bundle id `com.dimitryvin.alpacamobile`).
+
+Your **Apple Team ID is kept out of version control** — it lives in a gitignored
+`Config/Signing.xcconfig`. Create it once locally:
+
+```bash
+cp Config/Signing.xcconfig.example Config/Signing.xcconfig   # then set DEVELOPMENT_TEAM
+```
+
+On Xcode Cloud, add a `DEVELOPMENT_TEAM` environment variable to the workflow;
+`ci_post_clone.sh` writes the xcconfig from it before generating the project.
 
 First-time setup (needs your App Store Connect login — one-time):
 
-1. **Register the App ID** `com.alpacamonitor.mobile` under team `GFUCLJHK34`.
-2. **Create the app record** in App Store Connect (name, bundle id, personal team).
+1. **Register the App ID** `com.dimitryvin.alpacamobile` under your Apple Developer team.
+2. **Create the app record** in App Store Connect (name, bundle id, your team).
 3. In **Xcode → the project → Xcode Cloud tab**, create a workflow for the
    `AlpacaMonitorMobile` scheme with an **Archive → TestFlight (Internal Testing)** action,
-   grant it access to this repo, and start a build. Xcode Cloud manages the distribution
-   certificate/profile for you.
+   add a `DEVELOPMENT_TEAM` environment variable, grant it access to this repo, and start a
+   build. Xcode Cloud manages the distribution certificate/profile for you.
 
 Subsequent builds: push to the configured branch (or tag) and the workflow builds, signs,
 and delivers to TestFlight automatically.
