@@ -1,0 +1,12 @@
+// Signing configuration template.
+//
+// Copy this file to `Config/Signing.xcconfig` (which is gitignored) and set your
+// Apple Developer Team ID so the Team ID never lands in version control:
+//
+//     cp Config/Signing.xcconfig.example Config/Signing.xcconfig
+//     # then edit DEVELOPMENT_TEAM below
+//
+// On Xcode Cloud, `ci_scripts/ci_post_clone.sh` generates `Config/Signing.xcconfig`
+// automatically from the `DEVELOPMENT_TEAM` environment variable, so nothing here
+// needs to be committed with a real value.
+DEVELOPMENT_TEAM = YOUR_TEAM_ID

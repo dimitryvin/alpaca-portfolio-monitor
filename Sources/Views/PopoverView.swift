@@ -13,6 +13,7 @@ enum PopoverTab: String, CaseIterable, Identifiable {
 struct PopoverView: View {
     @Environment(PortfolioStore.self) private var store
     @State private var tab: PopoverTab = .portfolio
+    @State private var showPairingQR = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -47,6 +48,11 @@ struct PopoverView: View {
             footer
         }
         .padding(14)
+        .sheet(isPresented: $showPairingQR) {
+            if let credentials = store.credentials {
+                PairingQRView(credentials: credentials)
+            }
+        }
     }
 
     private var header: some View {
@@ -97,6 +103,7 @@ struct PopoverView: View {
                     set: { LaunchAtLogin.set($0) }
                 ))
                 Divider()
+                Button("Connect iPhone…") { showPairingQR = true }
                 Button("Change API Keys…") { store.signOut() }
                 Divider()
                 Button("Quit") { NSApplication.shared.terminate(nil) }

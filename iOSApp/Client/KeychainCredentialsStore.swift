@@ -1,21 +1,20 @@
 import Foundation
 import Security
 
-/// Stores Alpaca credentials in the macOS Keychain as a single generic-password
-/// item. The key ID is stored as the account; the secret as the value.
+/// Persists Alpaca credentials in the iOS Keychain as a single generic-password
+/// item (key ID + secret encoded together). Mirrors the macOS `KeychainStore` but
+/// uses the iOS app's own service identifier.
 ///
 /// Credentials are never written to logs or `UserDefaults`.
-enum KeychainStore {
-    private static let service = "com.alpacamonitor.AlpacaPortfolioMonitor"
+enum KeychainCredentialsStore {
+    private static let service = "com.dimitryvin.alpacamobile"
     private static let account = "alpaca-credentials"
 
-    /// Saves credentials, overwriting any existing item.
     static func save(_ credentials: Credentials) throws {
-        guard credentials.isValid else { throw KeychainError.invalidInput }
+        guard credentials.isValid else { throw KeychainCredentialsError.invalidInput }
 
-        // Encode "keyID\nsecret" so both halves live in one item.
         let payload = "\(credentials.keyID)\n\(credentials.secret)"
-        guard let data = payload.data(using: .utf8) else { throw KeychainError.invalidInput }
+        guard let data = payload.data(using: .utf8) else { throw KeychainCredentialsError.invalidInput }
 
         let baseQuery: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -30,10 +29,9 @@ enum KeychainStore {
         addQuery[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
 
         let status = SecItemAdd(addQuery as CFDictionary, nil)
-        guard status == errSecSuccess else { throw KeychainError.unhandled(status) }
+        guard status == errSecSuccess else { throw KeychainCredentialsError.unhandled(status) }
     }
 
-    /// Loads credentials, or `nil` if none are stored.
     static func load() -> Credentials? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -55,7 +53,6 @@ enum KeychainStore {
         return credentials.isValid ? credentials : nil
     }
 
-    /// Removes stored credentials, if any.
     static func clear() {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -66,7 +63,7 @@ enum KeychainStore {
     }
 }
 
-enum KeychainError: Error, Equatable {
+enum KeychainCredentialsError: Error, Equatable {
     case invalidInput
     case unhandled(OSStatus)
 }
