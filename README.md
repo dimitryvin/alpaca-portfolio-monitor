@@ -11,6 +11,10 @@ brokerage portfolio value and today's change at a glance. Click the menu bar ite
 popover with an equity chart, key stats, your open positions, and your trade history with
 realized P/L.
 
+A companion **iOS app** (built with [The Composable Architecture](https://github.com/pointfreeco/swift-composable-architecture))
+mirrors the same portfolio on your phone. Pair it in seconds by scanning a QR code the
+Mac app shows — no retyping keys. See [iOS companion app](#ios-companion-app) below.
+
 > **Read-only.** The app only issues `GET` requests to Alpaca and never places trades.
 
 <p align="center">
@@ -94,14 +98,78 @@ xcodebuild test -project AlpacaPortfolioMonitor.xcodeproj -scheme AlpacaPortfoli
 - It runs as an agent app (no Dock icon) via `LSUIElement`.
 - Local/automatic signing is sufficient for personal use.
 
+## iOS companion app
+
+`AlpacaMonitorMobile` is an iPhone app (SwiftUI + The Composable Architecture) that shows
+the same Portfolio (equity chart, key stats, positions) and Trades (realized P/L) as the
+Mac app. It shares the domain layer in `Shared/` with the Mac app — the models, the
+read-only `AlpacaClient`, and the trade builder are compiled into both.
+
+**Pairing.** On the Mac, open the popover → gear menu → **Connect iPhone…** to show a QR
+code. In the iOS app, scan it. The QR carries your Alpaca API key/secret (a versioned JSON
+payload, `Shared/Pairing/PairingPayload.swift`); the app validates them with a single
+`GET /v2/account`, then stores them in the iOS Keychain. A manual key-entry fallback is
+available (e.g. in the Simulator, which has no camera).
+
+> **Keep the QR private.** It contains your API keys in plaintext. It's meant to be shown
+> on your own screen and scanned by your own phone. Regenerate your Alpaca keys if exposed.
+
+**Build & run (Simulator):**
+
+```bash
+xcodegen generate
+xcodebuild build -scheme AlpacaMonitorMobile \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -skipMacroValidation
+xcodebuild test  -scheme AlpacaMonitorMobile \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -skipMacroValidation
+```
+
+To preview the UI with canned data (no account needed), launch with `ALPACA_DEMO=1`
+(DEBUG-only; stripped from release builds):
+
+```bash
+SIMCTL_CHILD_ALPACA_DEMO=1 xcrun simctl launch booted com.alpacamonitor.mobile
+```
+
+### TestFlight via Xcode Cloud
+
+The iOS target is set up for [Xcode Cloud](https://developer.apple.com/xcode-cloud/):
+`ci_scripts/ci_post_clone.sh` runs `xcodegen generate` after each clone (the `.xcodeproj`
+is generated, not committed), and the `AlpacaMonitorMobile` scheme is shared. It signs
+under personal team **`GFUCLJHK34`** with automatic signing (bundle id
+`com.alpacamonitor.mobile`).
+
+First-time setup (needs your App Store Connect login — one-time):
+
+1. **Register the App ID** `com.alpacamonitor.mobile` under team `GFUCLJHK34`.
+2. **Create the app record** in App Store Connect (name, bundle id, personal team).
+3. In **Xcode → the project → Xcode Cloud tab**, create a workflow for the
+   `AlpacaMonitorMobile` scheme with an **Archive → TestFlight (Internal Testing)** action,
+   grant it access to this repo, and start a build. Xcode Cloud manages the distribution
+   certificate/profile for you.
+
+Subsequent builds: push to the configured branch (or tag) and the workflow builds, signs,
+and delivers to TestFlight automatically.
+
 ## Project layout
 
 ```
 project.yml                 XcodeGen spec (the .xcodeproj is generated, not committed)
-Sources/
+Shared/                     Cross-platform domain, compiled into BOTH apps
+  Models/                   Codable models, Credentials, chart range mapping
+  Services/                 Read-only Alpaca client + trade builder
+  Pairing/                  PairingPayload — the QR pairing codec
+  Formatters.swift          Currency/percent formatting
+Sources/                    macOS menu-bar app
   App/                      @main app + Info.plist
-  Models/                   Codable models + chart range mapping
-  Services/                 Alpaca client, Keychain store, observable store
-  Views/                    Menu bar label, popover, chart, stats, positions, setup
-Tests/                      Parsing + calculation unit tests
+  Services/                 Keychain store, observable store, notifier, launch-at-login
+  Views/                    Menu bar label, popover, chart, stats, positions, setup, QR
+iOSApp/                     iOS companion app (TCA)
+  App/                      @main app + Info.plist
+  Client/                   AlpacaAPIClient + Keychain-backed CredentialsClient (deps)
+  Features/                 App / Pairing / Dashboard / Portfolio / Trades reducers
+  Views/                    Pairing, QR scanner, dashboard, chart, stats, trades
+iOSAppTests/                TCA TestStore feature tests
+Tests/                      macOS parsing/calculation tests + pairing codec test
+ci_scripts/                 Xcode Cloud post-clone hook (runs xcodegen)
 ```
