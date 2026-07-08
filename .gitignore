@@ -21,5 +21,6 @@ Package.resolved
 # Serena MCP project cache
 .serena/
 
-# Local signing config — keeps the Apple Team ID out of version control
-Config/Signing.xcconfig
+# Local signing override — keeps the Apple Team ID out of version control.
+# (Config/Signing.xcconfig itself is a committed stub that optionally includes this.)
+Config/Signing.local.xcconfig

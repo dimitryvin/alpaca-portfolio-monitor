@@ -117,7 +117,6 @@ available (e.g. in the Simulator, which has no camera).
 **Build & run (Simulator):**
 
 ```bash
-cp Config/Signing.xcconfig.example Config/Signing.xcconfig   # first time only (see below)
 xcodegen generate
 xcodebuild build -scheme AlpacaMonitorMobile \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -skipMacroValidation
@@ -125,9 +124,8 @@ xcodebuild test  -scheme AlpacaMonitorMobile \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -skipMacroValidation
 ```
 
-`xcodegen generate` requires `Config/Signing.xcconfig` to exist (it's gitignored — see
-[TestFlight](#testflight-via-xcode-cloud) below); the placeholder from the example file is
-fine for Simulator builds.
+(Simulator builds need no signing; the committed `Config/Signing.xcconfig` stub means
+generation works out of the box. Only device/TestFlight builds need a Team ID — see below.)
 
 To preview the UI with canned data (no account needed), launch with `ALPACA_DEMO=1`
 (DEBUG-only; stripped from release builds):
@@ -143,15 +141,16 @@ The iOS target is set up for [Xcode Cloud](https://developer.apple.com/xcode-clo
 is generated, not committed), and the `AlpacaMonitorMobile` scheme is shared. It signs
 under your Apple Developer team with automatic signing (bundle id `com.dimitryvin.alpacamobile`).
 
-Your **Apple Team ID is kept out of version control** — it lives in a gitignored
-`Config/Signing.xcconfig`. Create it once locally:
+Your **Apple Team ID is kept out of version control**: `Config/Signing.xcconfig` is a
+committed stub that optionally includes a gitignored `Config/Signing.local.xcconfig`
+holding the Team ID. For device/TestFlight builds, create it once locally:
 
 ```bash
-cp Config/Signing.xcconfig.example Config/Signing.xcconfig   # then set DEVELOPMENT_TEAM
+cp Config/Signing.local.xcconfig.example Config/Signing.local.xcconfig   # then set DEVELOPMENT_TEAM
 ```
 
 On Xcode Cloud, add a `DEVELOPMENT_TEAM` environment variable to the workflow;
-`ci_post_clone.sh` writes the xcconfig from it before generating the project.
+`ci_post_clone.sh` writes `Config/Signing.local.xcconfig` from it before generating.
 
 First-time setup (needs your App Store Connect login — one-time):
 

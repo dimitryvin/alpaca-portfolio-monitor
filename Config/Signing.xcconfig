@@ -1,0 +1,13 @@
+// Committed stub referenced by the iOS target's configFiles in project.yml.
+//
+// Keeping this file tracked lets `xcodegen generate` succeed on every checkout —
+// including the macOS release (scripts/release.sh) and fresh CI clones — which
+// otherwise fail spec validation when the config file is missing.
+//
+// The real Apple Team ID is NOT stored here. It lives in Config/Signing.local.xcconfig
+// (gitignored), optionally included below. That file is:
+//   - created locally from Config/Signing.local.xcconfig.example, or
+//   - generated on Xcode Cloud from the DEVELOPMENT_TEAM env var (ci_post_clone.sh).
+// When it's absent (e.g. the macOS-only release, which doesn't sign the iOS app),
+// the optional include is silently skipped.
+#include? "Signing.local.xcconfig"
