@@ -1,0 +1,22 @@
+README.md
+  s_5b08b992932f58::t_13cb352c8cc98b 14-17
+  s_5b08b992932f58::t_a3803da6d18b23 101-153,158-167,169-174
+ci_scripts/ci_post_clone.sh
+  s_5b08b992932f58::t_6c74f4ee499d77 1-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "f3659ad3a1c0ab7fac9eb99ac4357158f6caa4e7",
+  "prompts": {},
+  "sessions": {
+    "s_5b08b992932f58": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4db3bf97-23a3-439b-a3ce-147a903fe93b",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Dimitry Vinogradov <dimitryvin@gmail.com>"
+    }
+  }
+}
