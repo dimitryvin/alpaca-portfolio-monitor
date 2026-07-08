@@ -1,0 +1,21 @@
+Shared/Models/Credentials.swift
+  s_5b08b992932f58::t_41439cae42d1d8 1-13
+project.yml
+  s_5b08b992932f58::t_b1044522e1e47a 23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "2f1042e48f294076ea425361f765c906aa3ea88f",
+  "prompts": {},
+  "sessions": {
+    "s_5b08b992932f58": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4db3bf97-23a3-439b-a3ce-147a903fe93b",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Dimitry Vinogradov <dimitryvin@gmail.com>"
+    }
+  }
+}
