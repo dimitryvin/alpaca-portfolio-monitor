@@ -1,14 +1,6 @@
 import Foundation
 import Security
 
-/// Alpaca API credentials (a key/secret pair).
-struct Credentials: Equatable, Sendable {
-    let keyID: String
-    let secret: String
-
-    var isValid: Bool { !keyID.isEmpty && !secret.isEmpty }
-}
-
 /// Stores Alpaca credentials in the macOS Keychain as a single generic-password
 /// item. The key ID is stored as the account; the secret as the value.
 ///

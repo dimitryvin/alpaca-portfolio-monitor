@@ -20,6 +20,7 @@ targets:
     platform: macOS
     sources:
       - path: Sources
+      - path: Shared
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.alpacamonitor.AlpacaPortfolioMonitor
