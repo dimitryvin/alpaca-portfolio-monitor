@@ -1,0 +1,26 @@
+README.md
+  s_5b08b992932f58::t_ee93dc22d2ea90 144-146,149,153
+  s_5b08b992932f58::t_bea86e35240333 127-128
+Config/Signing.xcconfig
+  s_5b08b992932f58::t_0bd55f65c9de78 1-13
+.gitignore
+  s_5b08b992932f58::t_15eba3b064665a 24-26
+ci_scripts/ci_post_clone.sh
+  s_5b08b992932f58::t_8d32ced150428d 12-16,21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "442e490fdca54af1ad44d25f1477d5411a205bbd",
+  "prompts": {},
+  "sessions": {
+    "s_5b08b992932f58": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4db3bf97-23a3-439b-a3ce-147a903fe93b",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Dimitry Vinogradov <dimitryvin@gmail.com>"
+    }
+  }
+}
