@@ -1,0 +1,36 @@
+project.yml
+  s_5b08b992932f58::t_8d00ec18fda819 71-76
+  s_5b08b992932f58::t_6d726a85528404 79,107
+README.md
+  s_5b08b992932f58::t_0c916e746b62ea 136
+  s_5b08b992932f58::t_af9c6247422e97 158
+  s_5b08b992932f58::t_22b84462efa557 120,128-130
+  s_5b08b992932f58::t_43773ea1f1fe97 144-154,159,162-163
+  s_5b08b992932f58::t_1d5f530485b834 131
+iOSApp/Views/QRScannerView.swift
+  s_5b08b992932f58::t_04cfa75b059089 34
+ci_scripts/ci_post_clone.sh
+  s_5b08b992932f58::t_1da657dfa5676a 9-22
+Config/Signing.xcconfig.example
+  s_5b08b992932f58::t_94c7eb1e8d6837 1-12
+iOSApp/Client/KeychainCredentialsStore.swift
+  s_5b08b992932f58::t_c898fc7d22dedc 10
+.gitignore
+  s_5b08b992932f58::t_0a51a0f452414a 23-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "1d1cf6dc819ce01e78bb466bc0be2a955922580c",
+  "prompts": {},
+  "sessions": {
+    "s_5b08b992932f58": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4db3bf97-23a3-439b-a3ce-147a903fe93b",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Dimitry Vinogradov <dimitryvin@gmail.com>"
+    }
+  }
+}
