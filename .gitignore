@@ -28,3 +28,4 @@ Config/Signing.local.xcconfig
 # Local ad hoc OTA publish script — references personal homelab infra
 # (builds.dimitryvin.com portal); intentionally untracked in the public repo.
 scripts/adhoc-release.sh
+.adhoc-release.env
