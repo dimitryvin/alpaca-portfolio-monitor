@@ -24,3 +24,7 @@ Package.resolved
 # Local signing override — keeps the Apple Team ID out of version control.
 # (Config/Signing.xcconfig itself is a committed stub that optionally includes this.)
 Config/Signing.local.xcconfig
+
+# Local ad hoc OTA publish script — references personal homelab infra
+# (builds.dimitryvin.com portal); intentionally untracked in the public repo.
+scripts/adhoc-release.sh
