@@ -1,0 +1,19 @@
+.gitignore
+  s_f9803fb8c90ba2::t_c561101d52d2b2 31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "18e7d25f80cc67167b3ee5da35cd1d7dfa50fa97",
+  "prompts": {},
+  "sessions": {
+    "s_f9803fb8c90ba2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5561910e-aa10-49bb-b485-6300739e736e",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Dimitry Vinogradov <dimitryvin@gmail.com>"
+    }
+  }
+}
