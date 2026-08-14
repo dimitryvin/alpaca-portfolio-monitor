@@ -63,4 +63,50 @@ final class ParsingTests: XCTestCase {
         XCTAssertEqual(p.unrealizedPLPct, 5.55, accuracy: 0.001)
         XCTAssertEqual(p.changeTodayPct, 1.2, accuracy: 0.001)
     }
+
+    func testDecodePositionUsesIntradayFieldsWhenPresent() throws {
+        let json = """
+        [
+          {
+            "symbol": "AAPL",
+            "qty": "10",
+            "market_value": "1900.00",
+            "current_price": "190.00",
+            "unrealized_pl": "100.00",
+            "unrealized_plpc": "0.0555",
+            "unrealized_intraday_pl": "22.50",
+            "unrealized_intraday_plpc": "0.0118",
+            "change_today": "0.012"
+          }
+        ]
+        """.data(using: .utf8)!
+
+        let p = try JSONDecoder().decode([Position].self, from: json)[0]
+        XCTAssertEqual(p.unrealizedIntradayPL, 22.50, accuracy: 0.001)
+        XCTAssertEqual(p.unrealizedIntradayPLPct, 1.18, accuracy: 0.001)
+    }
+
+    func testDecodePositionFallsBackToChangeTodayWhenIntradayAbsent() throws {
+        // Legacy payload without the intraday keys must still decode, deriving
+        // today's P/L from change_today rather than failing.
+        let json = """
+        [
+          {
+            "symbol": "AAPL",
+            "qty": "10",
+            "market_value": "1012.00",
+            "current_price": "101.20",
+            "unrealized_pl": "100.00",
+            "unrealized_plpc": "0.0555",
+            "change_today": "0.012"
+          }
+        ]
+        """.data(using: .utf8)!
+
+        let p = try JSONDecoder().decode([Position].self, from: json)[0]
+        // Percentage falls back to change_today (1.2%).
+        XCTAssertEqual(p.unrealizedIntradayPLPct, 1.2, accuracy: 0.001)
+        // Dollars derive from marketValue − marketValue / (1 + changeToday).
+        XCTAssertEqual(p.unrealizedIntradayPL, 1012.0 - 1012.0 / 1.012, accuracy: 0.001)
+    }
 }

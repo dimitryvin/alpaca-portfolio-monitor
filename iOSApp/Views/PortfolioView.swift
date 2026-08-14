@@ -18,8 +18,12 @@ struct PortfolioView: View {
                 }
 
                 rangePicker
-                EquityChartView(points: store.history?.points ?? [], change: chartChange)
-                    .frame(height: 220)
+                EquityChartView(
+                    points: store.history?.points ?? [],
+                    change: chartChange,
+                    range: store.selectedRange
+                )
+                .frame(height: 220)
 
                 if let account = store.account {
                     KeyStatsView(account: account)
