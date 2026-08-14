@@ -1,0 +1,40 @@
+Sources/Views/PositionsListView.swift
+  s_064f8b9171ee94::t_c7f2b5c3711861 3-4,8-11,13,18,38-84,103,105-106,109
+Shared/Models/ChartSeries.swift
+  s_064f8b9171ee94::t_a4511a2278eab2 1-64
+iOSApp/Views/PortfolioView.swift
+  s_064f8b9171ee94::t_2def5880f3266f 21-26
+iOSApp/Views/PositionsSection.swift
+  s_064f8b9171ee94::t_d76a497b3c578f 3-4,8-15,18-25,34-43,50-76,81,103-104,107
+Shared/Models/Position.swift
+  s_064f8b9171ee94::t_8f7a70bd4e516a 13-14,24-25,29-52,58-59,65-81,84-86
+Tests/ChartSeriesTests.swift
+  s_064f8b9171ee94::t_5d3ede216782db 1-48
+Shared/Models/PositionListOptions.swift
+  s_064f8b9171ee94::t_cf92956912c691 1-78
+Sources/Views/PortfolioChartView.swift
+  s_064f8b9171ee94::t_eb8e6e9489f46d 28,30-36,49-106,109
+Tests/ParsingTests.swift
+  s_064f8b9171ee94::t_d6881f98e8cacf 66-111
+Tests/PositionSortTests.swift
+  s_064f8b9171ee94::t_41ff4ce6633aee 1-69
+iOSApp/Views/EquityChartView.swift
+  s_064f8b9171ee94::t_85e6bb828c01de 5-7,11,22-23,25-32,37,39-66,69-81,88-94
+  s_064f8b9171ee94::t_c5edca3f72c7fe 95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "100e9f9c0e01a92ad237232cf3f8b421874a15a2",
+  "prompts": {},
+  "sessions": {
+    "s_064f8b9171ee94": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "590c3216-901c-4446-8f2e-6bfc02fc326f",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Dimitry Vinogradov <dimitryvin@gmail.com>"
+    }
+  }
+}
