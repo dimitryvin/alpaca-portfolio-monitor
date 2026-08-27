@@ -44,13 +44,14 @@ private struct StatTile: View {
             Text(value)
                 .font(.system(.title3, design: .rounded).weight(.semibold))
                 .foregroundStyle(tint)
-            if let detail {
-                Text(detail)
-                    .font(.caption2)
-                    .foregroundStyle(tint)
-            }
+            // Always reserve the detail line so every tile is the same height as
+            // the ones that show a percentage (e.g. Today's P/L).
+            Text(detail ?? " ")
+                .font(.caption2)
+                .foregroundStyle(tint)
+                .opacity(detail == nil ? 0 : 1)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding(14)
         .background(.quaternary.opacity(0.4), in: .rect(cornerRadius: 14))
     }

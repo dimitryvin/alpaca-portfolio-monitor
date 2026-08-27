@@ -13,7 +13,13 @@ final class PortfolioStore {
     private(set) var account: Account?
     private(set) var history: PortfolioHistory?
     private(set) var positions: [Position] = []
+    /// Company reference data by lookup symbol (underlying for options), cached
+    /// across refreshes so names aren't re-fetched every cycle.
+    private(set) var assets: [String: Asset] = [:]
     private(set) var isLoading = false
+    /// True only while a range change is fetching, so the chart shows a loader
+    /// without flashing on the silent 60-second refresh.
+    private(set) var isChartLoading = false
     private(set) var errorMessage: String?
     private(set) var needsReauth = false
     private(set) var lastUpdated: Date?
@@ -38,6 +44,7 @@ final class PortfolioStore {
     var selectedRange: ChartRange = .day {
         didSet {
             guard oldValue != selectedRange else { return }
+            isChartLoading = true
             Task { await refresh() }
         }
     }
@@ -86,6 +93,8 @@ final class PortfolioStore {
         account = nil
         history = nil
         positions = []
+        assets = [:]
+        isChartLoading = false
         trades = []
         tradesLoaded = false
         tradesError = nil
@@ -194,6 +203,11 @@ final class PortfolioStore {
             self.lastUpdated = Date()
             self.needsReauth = false
             Self.log.info("refresh ok: positions=\(self.positions.count, privacy: .public), historyPoints=\(self.history?.points.count ?? 0, privacy: .public)")
+            // Resolve company names for any holdings we don't have yet.
+            let missing = Set(self.positions.map(\.displaySymbol)).subtracting(self.assets.keys)
+            if !missing.isEmpty {
+                Task { await self.loadAssetNames(for: missing) }
+            }
         } catch AlpacaError.unauthorized {
             self.errorMessage = AlpacaError.unauthorized.errorDescription
             self.needsReauth = true
@@ -204,6 +218,26 @@ final class PortfolioStore {
             Self.log.error("refresh failed: \(error.localizedDescription, privacy: .public)")
         }
         isLoading = false
+        isChartLoading = false
+    }
+
+    /// Fetches and caches company reference data for the given lookup symbols,
+    /// concurrently. Failures are ignored: a missing name just falls back to the
+    /// ticker in the UI.
+    private func loadAssetNames(for symbols: Set<String>) async {
+        guard let credentials, !symbols.isEmpty else { return }
+        let client = AlpacaClient(credentials: credentials)
+        await withTaskGroup(of: (String, Asset)?.self) { group in
+            for symbol in symbols {
+                group.addTask {
+                    guard let asset = try? await client.fetchAsset(symbol: symbol) else { return nil }
+                    return (symbol, asset)
+                }
+            }
+            for await pair in group {
+                if let pair { self.assets[pair.0] = pair.1 }
+            }
+        }
     }
 
     // MARK: - Auto refresh

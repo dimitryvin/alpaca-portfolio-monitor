@@ -26,8 +26,27 @@ enum Fixtures {
         Position(
             symbol: "AAPL", qtyRaw: "10", marketValueRaw: "2300.00",
             currentPriceRaw: "230.00", unrealizedPLRaw: "150.00",
-            unrealizedPLPctRaw: "0.0699", changeTodayRaw: "0.0120"
+            unrealizedPLPctRaw: "0.0699", changeTodayRaw: "0.0120",
+            avgEntryPriceRaw: "215.00", costBasisRaw: "2150.00",
+            assetClass: "us_equity", exchange: "NASDAQ"
         )
+    ]
+
+    static let appleAsset = Asset(
+        symbol: "AAPL",
+        name: "Apple Inc. Common Stock",
+        exchange: "NASDAQ",
+        assetClass: "us_equity",
+        tradable: true,
+        fractionable: true,
+        shortable: true,
+        marginable: true,
+        status: "active"
+    )
+
+    static let bars: [StockBar] = [
+        StockBar(timestampRaw: "2024-07-01T13:30:00Z", open: 226, high: 227, low: 225, close: 226.5, volume: 1_000),
+        StockBar(timestampRaw: "2024-07-01T13:35:00Z", open: 226.5, high: 228, low: 226, close: 227.8, volume: 1_200),
     ]
 
     /// Two sells with realized P/L (100 + 50 = 150) and one buy without.

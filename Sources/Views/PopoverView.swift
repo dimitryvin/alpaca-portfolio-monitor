@@ -14,8 +14,26 @@ struct PopoverView: View {
     @Environment(PortfolioStore.self) private var store
     @State private var tab: PopoverTab = .portfolio
     @State private var showPairingQR = false
+    @State private var detailPosition: Position?
 
     var body: some View {
+        Group {
+            if let position = detailPosition {
+                // Swap the detail in place (no NavigationStack — a menu-bar popover
+                // has no title bar for one, and it left a large empty top gap).
+                StockDetailView(position: position, onBack: { detailPosition = nil })
+            } else {
+                mainContent
+            }
+        }
+        .sheet(isPresented: $showPairingQR) {
+            if let credentials = store.credentials {
+                PairingQRView(credentials: credentials)
+            }
+        }
+    }
+
+    private var mainContent: some View {
         VStack(alignment: .leading, spacing: 14) {
             header
 
@@ -39,7 +57,7 @@ struct PopoverView: View {
                 Divider()
                 KeyStatsView()
                 Divider()
-                PositionsListView()
+                PositionsListView(onSelect: { detailPosition = $0 })
             case .trades:
                 TradesListView()
             }
@@ -48,11 +66,6 @@ struct PopoverView: View {
             footer
         }
         .padding(14)
-        .sheet(isPresented: $showPairingQR) {
-            if let credentials = store.credentials {
-                PairingQRView(credentials: credentials)
-            }
-        }
     }
 
     private var header: some View {

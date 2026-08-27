@@ -12,6 +12,8 @@ struct AlpacaAPIClient: Sendable {
     var history: @Sendable (_ credentials: Credentials, _ range: ChartRange) async throws -> PortfolioHistory
     var positions: @Sendable (_ credentials: Credentials) async throws -> [Position]
     var trades: @Sendable (_ credentials: Credentials) async throws -> [Trade]
+    var asset: @Sendable (_ credentials: Credentials, _ symbol: String) async throws -> Asset
+    var bars: @Sendable (_ credentials: Credentials, _ symbol: String, _ range: ChartRange) async throws -> [StockBar]
 }
 
 extension AlpacaAPIClient: DependencyKey {
@@ -22,7 +24,9 @@ extension AlpacaAPIClient: DependencyKey {
         trades: {
             let activities = try await AlpacaClient(credentials: $0).fetchActivities()
             return TradeBuilder.build(from: activities)
-        }
+        },
+        asset: { try await AlpacaClient(credentials: $0).fetchAsset(symbol: $1) },
+        bars: { try await AlpacaClient(credentials: $0).fetchBars(symbol: $1, range: $2) }
     )
 
     /// All endpoints unimplemented: tests must override the ones they exercise.

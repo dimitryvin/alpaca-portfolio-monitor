@@ -4,9 +4,10 @@ import SwiftUI
 /// toggle in the header.
 struct PositionsListView: View {
     @Environment(PortfolioStore.self) private var store
+    var onSelect: (Position) -> Void = { _ in }
 
-    @State private var sortKey: PositionSortKey = .totalPL
-    @State private var ascending = PositionSortKey.totalPL.defaultAscending
+    @State private var sortKey: PositionSortKey = PLColumn.total.sortKey
+    @State private var ascending = PLColumn.total.sortKey.defaultAscending
     @State private var plColumn: PLColumn = .total
 
     private var sorted: [Position] {
@@ -51,6 +52,12 @@ struct PositionsListView: View {
                 .labelsHidden()
                 .fixedSize()
                 .controlSize(.small)
+                // Toggling the column defaults the sort to that column's P/L,
+                // gains → losses.
+                .onChange(of: plColumn) { _, column in
+                    sortKey = column.sortKey
+                    ascending = false
+                }
                 sortMenu
             }
         }
@@ -84,38 +91,51 @@ struct PositionsListView: View {
 
     private func row(_ position: Position) -> some View {
         let option = OptionSymbol(position.symbol)
-        return HStack {
-            VStack(alignment: .leading, spacing: 1) {
-                HStack(spacing: 6) {
-                    Text(option?.underlying ?? position.symbol)
-                        .font(.system(.callout, design: .rounded).weight(.semibold))
-                    if let option { OptionKindChip(kind: option.kind) }
+        return Button {
+            onSelect(position)
+        } label: {
+            HStack {
+                VStack(alignment: .leading, spacing: 1) {
+                    HStack(spacing: 6) {
+                        Text(option?.underlying ?? position.symbol)
+                            .font(.system(.callout, design: .rounded).weight(.semibold))
+                        if let option { OptionKindChip(kind: option.kind) }
+                    }
+                    Text(subtitle(for: position, option: option))
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
                 }
-                Text(subtitle(for: position, option: option))
+                Spacer()
+                VStack(alignment: .trailing, spacing: 1) {
+                    Text(CurrencyFormatter.full.string(from: position.marketValue))
+                        .font(.callout)
+                    // Total P/L since entry, or today's move, per the header toggle.
+                    HStack(spacing: 4) {
+                        Text(PercentFormatter.signed(plColumn.percent(for: position)))
+                        Text(CurrencyFormatter.full.signedString(from: plColumn.value(for: position)))
+                    }
                     .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-            }
-            Spacer()
-            VStack(alignment: .trailing, spacing: 1) {
-                Text(CurrencyFormatter.full.string(from: position.marketValue))
-                    .font(.callout)
-                // Total P/L since entry, or today's move, per the header toggle.
-                HStack(spacing: 4) {
-                    Text(PercentFormatter.signed(plColumn.percent(for: position)))
-                    Text(CurrencyFormatter.full.signedString(from: plColumn.value(for: position)))
+                    .foregroundStyle(changeColor(plColumn.value(for: position)))
                 }
-                .font(.caption2)
-                .foregroundStyle(changeColor(plColumn.value(for: position)))
+                Image(systemName: "chevron.right")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
             }
+            .padding(.vertical, 2)
+            .contentShape(.rect)
         }
-        .padding(.vertical, 2)
+        .buttonStyle(.plain)
     }
 
-    /// Second line: share count for stocks; contract count + strike + expiration
-    /// for options (e.g. "9 contracts · $14 · Exp Jul 10").
+    /// Second line: the company name for stocks (falling back to the share count
+    /// until it resolves); contract count + strike + expiration for options
+    /// (e.g. "9 contracts · $14 · Exp Jul 10").
     private func subtitle(for position: Position, option: OptionSymbol?) -> String {
-        guard let option else { return "\(formattedQty(position.qty)) sh" }
+        guard let option else {
+            if let name = store.assets[position.displaySymbol]?.name { return name }
+            return "\(formattedQty(position.qty)) sh"
+        }
         let unit = position.qty == 1 ? "contract" : "contracts"
         return "\(formattedQty(position.qty)) \(unit) · \(option.strikeText) · Exp \(option.expirationText)"
     }

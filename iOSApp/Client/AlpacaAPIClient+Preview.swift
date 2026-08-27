@@ -7,7 +7,9 @@ extension AlpacaAPIClient {
         account: { _ in Sample.account },
         history: { _, _ in Sample.history },
         positions: { _ in Sample.positions },
-        trades: { _ in Sample.trades }
+        trades: { _ in Sample.trades },
+        asset: { _, symbol in Sample.asset(for: symbol) },
+        bars: { _, _, _ in Sample.bars }
     )
 
     static let previewValue = AlpacaAPIClient.preview
@@ -41,14 +43,50 @@ private enum Sample {
         Position(
             symbol: "AAPL", qtyRaw: "40", marketValueRaw: "9240.00",
             currentPriceRaw: "231.00", unrealizedPLRaw: "612.40",
-            unrealizedPLPctRaw: "0.0709", changeTodayRaw: "0.0123"
+            unrealizedPLPctRaw: "0.0709", changeTodayRaw: "0.0123",
+            avgEntryPriceRaw: "215.69", costBasisRaw: "8627.60",
+            assetClass: "us_equity", exchange: "NASDAQ"
         ),
         Position(
             symbol: "NVDA", qtyRaw: "20", marketValueRaw: "24800.00",
             currentPriceRaw: "1240.00", unrealizedPLRaw: "-320.10",
-            unrealizedPLPctRaw: "-0.0127", changeTodayRaw: "-0.0044"
+            unrealizedPLPctRaw: "-0.0127", changeTodayRaw: "-0.0044",
+            avgEntryPriceRaw: "1256.00", costBasisRaw: "25120.10",
+            assetClass: "us_equity", exchange: "NASDAQ"
         ),
     ]
+
+    static func asset(for symbol: String) -> Asset {
+        let names = [
+            "AAPL": "Apple Inc. Common Stock",
+            "NVDA": "NVIDIA Corporation Common Stock",
+            "TSLL": "Direxion Daily TSLA Bull 2X Shares",
+        ]
+        return Asset(
+            symbol: symbol,
+            name: names[symbol] ?? "\(symbol) Common Stock",
+            exchange: "NASDAQ",
+            assetClass: "us_equity",
+            tradable: true,
+            fractionable: true,
+            shortable: true,
+            marginable: true,
+            status: "active"
+        )
+    }
+
+    static let bars: [StockBar] = {
+        let closes: [Double] = [
+            226.1, 227.4, 226.9, 228.8, 230.2, 229.6, 231.5, 232.0, 230.9, 231.0,
+        ]
+        return closes.enumerated().map { offset, close in
+            StockBar(
+                timestampRaw: "2024-07-\(String(format: "%02d", offset + 1))T14:30:00Z",
+                open: close - 0.4, high: close + 0.6, low: close - 0.7,
+                close: close, volume: 1_000_000
+            )
+        }
+    }()
 
     static let trades = [
         Trade(

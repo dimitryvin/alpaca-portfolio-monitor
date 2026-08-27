@@ -24,12 +24,23 @@ struct PortfolioView: View {
                     range: store.selectedRange
                 )
                 .frame(height: 220)
+                .overlay {
+                    if store.isChartLoading {
+                        ProgressView()
+                            .padding(10)
+                            .background(.regularMaterial, in: .rect(cornerRadius: 10))
+                    }
+                }
 
                 if let account = store.account {
                     KeyStatsView(account: account)
                 }
 
-                PositionsSection(positions: store.positions)
+                PositionsSection(
+                    positions: store.positions,
+                    assets: store.assets,
+                    onSelect: { store.send(.positionTapped($0)) }
+                )
             }
             .padding()
         }
@@ -39,6 +50,11 @@ struct PortfolioView: View {
             if store.isLoading && store.account == nil {
                 ProgressView().padding(.top, 40)
             }
+        }
+        .navigationDestination(
+            item: $store.scope(state: \.stockDetail, action: \.stockDetail)
+        ) { detailStore in
+            StockDetailView(store: detailStore)
         }
     }
 

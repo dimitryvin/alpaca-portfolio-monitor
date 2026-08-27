@@ -19,6 +19,14 @@ struct PortfolioChartView: View {
 
             chart
                 .frame(height: 140)
+                .overlay {
+                    if store.isChartLoading {
+                        ProgressView()
+                            .controlSize(.small)
+                            .padding(8)
+                            .background(.regularMaterial, in: .rect(cornerRadius: 8))
+                    }
+                }
         }
     }
 

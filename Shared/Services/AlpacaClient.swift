@@ -28,6 +28,9 @@ struct AlpacaClient: Sendable {
     /// Live trading API host. (The app is live-only by design.)
     static let baseURL = URL(string: "https://api.alpaca.markets")!
 
+    /// Market-data host, used for stock price bars.
+    static let dataBaseURL = URL(string: "https://data.alpaca.markets")!
+
     let credentials: Credentials
     private let session: URLSession
 
@@ -55,6 +58,38 @@ struct AlpacaClient: Sendable {
 
     func fetchPositions() async throws -> [Position] {
         try await get(path: "/v2/positions", query: [], as: [Position].self)
+    }
+
+    /// Fetches reference data for a single asset (company name, exchange, class).
+    func fetchAsset(symbol: String) async throws -> Asset {
+        let encoded = symbol.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? symbol
+        return try await get(path: "/v2/assets/\(encoded)", query: [], as: Asset.self)
+    }
+
+    /// Fetches historical price bars for a stock over the given range, from the
+    /// Market Data host. Uses the free IEX feed so it works on any account
+    /// (SIP requires a paid market-data subscription).
+    func fetchBars(symbol: String, range: ChartRange, now: Date = Date()) async throws -> [StockBar] {
+        let start = ISO8601DateFormatter.string(
+            from: range.barStart(from: now),
+            timeZone: TimeZone(identifier: "UTC")!,
+            formatOptions: [.withInternetDateTime]
+        )
+        let encoded = symbol.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? symbol
+        let response = try await get(
+            path: "/v2/stocks/\(encoded)/bars",
+            query: [
+                URLQueryItem(name: "timeframe", value: range.barTimeframe),
+                URLQueryItem(name: "start", value: start),
+                URLQueryItem(name: "limit", value: "10000"),
+                URLQueryItem(name: "adjustment", value: "split"),
+                URLQueryItem(name: "feed", value: "iex"),
+                URLQueryItem(name: "sort", value: "asc"),
+            ],
+            baseURL: Self.dataBaseURL,
+            as: StockBarsResponse.self
+        )
+        return response.bars ?? []
     }
 
     /// Fetches all fill activities (executed trades), paging through results.
@@ -90,10 +125,11 @@ struct AlpacaClient: Sendable {
     private func get<T: Decodable>(
         path: String,
         query: [URLQueryItem],
+        baseURL: URL = AlpacaClient.baseURL,
         as type: T.Type
     ) async throws -> T {
         var components = URLComponents(
-            url: Self.baseURL.appendingPathComponent(path),
+            url: baseURL.appendingPathComponent(path),
             resolvingAgainstBaseURL: false
         )!
         if !query.isEmpty { components.queryItems = query }
