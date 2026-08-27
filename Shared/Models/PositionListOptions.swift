@@ -41,6 +41,15 @@ enum PLColumn: String, CaseIterable, Identifiable, Sendable {
         }
     }
 
+    /// The sort key that ranks positions by this column's P/L. Selecting a column
+    /// defaults the list to sort by the matching figure, gains → losses.
+    var sortKey: PositionSortKey {
+        switch self {
+        case .total: return .totalPL
+        case .today: return .todayPL
+        }
+    }
+
     /// The dollar P/L for this column.
     func value(for position: Position) -> Double {
         switch self {

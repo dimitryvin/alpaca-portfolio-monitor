@@ -3,7 +3,7 @@ import Foundation
 /// An open position. Maps an element of `GET /v2/positions`.
 ///
 /// Numeric fields arrive as JSON strings and are exposed as `Double`.
-struct Position: Codable, Equatable, Sendable, Identifiable {
+struct Position: Codable, Equatable, Hashable, Sendable, Identifiable {
     let symbol: String
     let qtyRaw: String
     let marketValueRaw: String
@@ -13,6 +13,10 @@ struct Position: Codable, Equatable, Sendable, Identifiable {
     let unrealizedIntradayPLRaw: String?
     let unrealizedIntradayPLPctRaw: String?
     let changeTodayRaw: String
+    let avgEntryPriceRaw: String?
+    let costBasisRaw: String?
+    let assetClass: String?
+    let exchange: String?
 
     enum CodingKeys: String, CodingKey {
         case symbol
@@ -24,10 +28,14 @@ struct Position: Codable, Equatable, Sendable, Identifiable {
         case unrealizedIntradayPLRaw = "unrealized_intraday_pl"
         case unrealizedIntradayPLPctRaw = "unrealized_intraday_plpc"
         case changeTodayRaw = "change_today"
+        case avgEntryPriceRaw = "avg_entry_price"
+        case costBasisRaw = "cost_basis"
+        case assetClass = "asset_class"
+        case exchange
     }
 
-    /// Memberwise initializer with the intraday fields defaulted, so existing
-    /// call sites (previews, fixtures) keep compiling without them.
+    /// Memberwise initializer with the intraday and detail fields defaulted, so
+    /// existing call sites (previews, fixtures) keep compiling without them.
     init(
         symbol: String,
         qtyRaw: String,
@@ -37,7 +45,11 @@ struct Position: Codable, Equatable, Sendable, Identifiable {
         unrealizedPLPctRaw: String,
         changeTodayRaw: String,
         unrealizedIntradayPLRaw: String? = nil,
-        unrealizedIntradayPLPctRaw: String? = nil
+        unrealizedIntradayPLPctRaw: String? = nil,
+        avgEntryPriceRaw: String? = nil,
+        costBasisRaw: String? = nil,
+        assetClass: String? = nil,
+        exchange: String? = nil
     ) {
         self.symbol = symbol
         self.qtyRaw = qtyRaw
@@ -48,6 +60,10 @@ struct Position: Codable, Equatable, Sendable, Identifiable {
         self.unrealizedIntradayPLRaw = unrealizedIntradayPLRaw
         self.unrealizedIntradayPLPctRaw = unrealizedIntradayPLPctRaw
         self.changeTodayRaw = changeTodayRaw
+        self.avgEntryPriceRaw = avgEntryPriceRaw
+        self.costBasisRaw = costBasisRaw
+        self.assetClass = assetClass
+        self.exchange = exchange
     }
 
     var id: String { symbol }
@@ -55,6 +71,15 @@ struct Position: Codable, Equatable, Sendable, Identifiable {
     var qty: Double { Double(qtyRaw) ?? 0 }
     var marketValue: Double { Double(marketValueRaw) ?? 0 }
     var currentPrice: Double { Double(currentPriceRaw ?? "") ?? 0 }
+
+    /// Average entry price (Alpaca `avg_entry_price`), or `nil` when absent.
+    var avgEntryPrice: Double? { avgEntryPriceRaw.flatMap(Double.init) }
+
+    /// Total cost basis of the position (Alpaca `cost_basis`), or `nil` when absent.
+    var costBasis: Double? { costBasisRaw.flatMap(Double.init) }
+
+    /// Whether this position is a single-leg option (vs. a plain equity).
+    var isOption: Bool { OptionSymbol(symbol) != nil }
 
     /// Unrealized gain/loss on the position since entry.
     var unrealizedPL: Double { Double(unrealizedPLRaw) ?? 0 }

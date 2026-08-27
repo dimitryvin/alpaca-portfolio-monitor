@@ -66,4 +66,10 @@ final class PositionSortTests: XCTestCase {
         XCTAssertEqual(PLColumn.total.value(for: p), 6.15, accuracy: 0.001)
         XCTAssertEqual(PLColumn.today.value(for: p), -1.00, accuracy: 0.001)
     }
+
+    func testPLColumnMapsToSortKey() {
+        // Selecting a P/L column defaults the sort to the matching key.
+        XCTAssertEqual(PLColumn.total.sortKey, .totalPL)
+        XCTAssertEqual(PLColumn.today.sortKey, .todayPL)
+    }
 }
