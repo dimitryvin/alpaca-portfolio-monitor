@@ -1,0 +1,19 @@
+project.yml
+  s_60f02011d4db6b::t_8824f266a6b28d 17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "8ce36034c8901b06a6606a5e7bafaff4c60fb463",
+  "prompts": {},
+  "sessions": {
+    "s_60f02011d4db6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a6b5557d-2c26-4a2e-be2a-77000ad46c54",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Dimitry Vinogradov <dimitryvin@gmail.com>"
+    }
+  }
+}
