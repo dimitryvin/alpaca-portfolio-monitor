@@ -6,6 +6,10 @@ import SwiftUI
 struct PortfolioView: View {
     @Bindable var store: StoreOf<PortfolioFeature>
 
+    /// The chart point being scrubbed. Transient view state: it lives only for
+    /// the duration of a gesture, so it stays out of the feature's state.
+    @State private var scrub: ChartSelection?
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -21,9 +25,11 @@ struct PortfolioView: View {
                 EquityChartView(
                     points: store.history?.points ?? [],
                     change: chartChange,
-                    range: store.selectedRange
+                    range: store.selectedRange,
+                    selection: $scrub
                 )
-                .frame(height: 220)
+                // Room for the scrub readout band above the plot.
+                .frame(height: 220 + ChartScrubMetrics.readoutHeight)
                 .overlay {
                     if store.isChartLoading {
                         ProgressView()
@@ -61,16 +67,17 @@ struct PortfolioView: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: 4) {
             if let account = store.account {
-                Text(CurrencyFormatter.full.string(from: account.equity))
+                let figures = headerFigures(for: account)
+                Text(CurrencyFormatter.full.string(from: figures.value))
                     .font(.system(.largeTitle, design: .rounded).weight(.bold))
                     .contentTransition(.numericText())
                 HStack(spacing: 6) {
-                    Image(systemName: account.todaysChange >= 0 ? "arrow.up.right" : "arrow.down.right")
-                    Text(CurrencyFormatter.full.signedString(from: account.todaysChange))
-                    Text("(\(PercentFormatter.signed(account.todaysChangePct)))")
+                    Image(systemName: figures.change >= 0 ? "arrow.up.right" : "arrow.down.right")
+                    Text(CurrencyFormatter.full.signedString(from: figures.change))
+                    Text("(\(PercentFormatter.signed(figures.percent)))")
                 }
                 .font(.subheadline.weight(.medium))
-                .foregroundStyle(Color.forChange(account.todaysChange))
+                .foregroundStyle(Color.forChange(figures.change))
             } else {
                 Text("—")
                     .font(.system(.largeTitle, design: .rounded).weight(.bold))
@@ -83,6 +90,18 @@ struct PortfolioView: View {
                     .foregroundStyle(.secondary)
             }
         }
+    }
+
+    /// The headline value and change: the scrubbed point while the chart is
+    /// being scrubbed (measured from the range's baseline), else the live account.
+    private func headerFigures(for account: Account) -> (value: Double, change: Double, percent: Double) {
+        guard let scrub else {
+            return (account.equity, account.todaysChange, account.todaysChangePct)
+        }
+        let baseValue = store.history?.baseValue.flatMap { $0 != 0 ? $0 : nil }
+        let baseline = baseValue ?? store.history?.points.first?.equity ?? scrub.value
+        let change = scrub.change(from: baseline)
+        return (scrub.value, change.amount, change.percent)
     }
 
     private var rangePicker: some View {

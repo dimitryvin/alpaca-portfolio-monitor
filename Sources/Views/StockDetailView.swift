@@ -1,4 +1,3 @@
-import Charts
 import SwiftUI
 
 /// Detail screen for a single holding, pushed inside the popover's navigation
@@ -26,7 +25,8 @@ struct StockDetailView: View {
                 header
                 rangePicker
                 chart
-                    .frame(height: 140)
+                    // Room for the scrub readout band above the plot.
+                    .frame(height: 140 + ChartScrubMetrics.readoutHeight)
                     .overlay {
                         if isChartLoading {
                             ProgressView()
@@ -101,12 +101,7 @@ struct StockDetailView: View {
     @ViewBuilder
     private var chart: some View {
         if points.count >= 2 {
-            let tint: Color = chartChange >= 0 ? .green : .red
-            if selectedRange == .day, let xRange = ChartDomain.x(for: points, range: .day) {
-                priceChart(points: points, tint: tint, xRange: xRange)
-            } else {
-                indexChart(series: ChartSeries(points: points, range: selectedRange), tint: tint)
-            }
+            EquityLineChart(points: points, range: selectedRange, tint: chartChange >= 0 ? .green : .red)
         } else {
             RoundedRectangle(cornerRadius: 8)
                 .fill(Color.secondary.opacity(0.08))
@@ -122,52 +117,6 @@ struct StockDetailView: View {
     private var chartChange: Double {
         guard let first = points.first?.equity, let last = points.last?.equity else { return 0 }
         return last - first
-    }
-
-    private func priceChart(points: [PortfolioPoint], tint: Color, xRange: ClosedRange<Date>) -> some View {
-        let (lowerBound, upperBound) = yDomain(for: points.map(\.equity))
-        return Chart(points) { point in
-            AreaMark(
-                x: .value("Time", point.date),
-                yStart: .value("Min", lowerBound),
-                yEnd: .value("Price", point.equity)
-            )
-            .foregroundStyle(areaGradient(tint))
-            .interpolationMethod(.monotone)
-
-            LineMark(x: .value("Time", point.date), y: .value("Price", point.equity))
-                .foregroundStyle(tint)
-                .interpolationMethod(.monotone)
-        }
-        .chartYScale(domain: lowerBound...upperBound)
-        .chartXScale(domain: xRange)
-        .chartXAxis { AxisMarks(values: .automatic(desiredCount: 4)) }
-    }
-
-    private func indexChart(series: ChartSeries, tint: Color) -> some View {
-        let (lowerBound, upperBound) = yDomain(for: series.points.map(\.equity))
-        return Chart(series.points) { point in
-            AreaMark(
-                x: .value("t", point.index),
-                yStart: .value("Min", lowerBound),
-                yEnd: .value("Price", point.equity)
-            )
-            .foregroundStyle(areaGradient(tint))
-            .interpolationMethod(.monotone)
-
-            LineMark(x: .value("t", point.index), y: .value("Price", point.equity))
-                .foregroundStyle(tint)
-                .interpolationMethod(.monotone)
-        }
-        .chartYScale(domain: lowerBound...upperBound)
-        .chartXScale(domain: series.xDomain)
-        .chartXAxis {
-            AxisMarks(values: series.tickIndices) { value in
-                if let index = value.as(Int.self) {
-                    AxisValueLabel { Text(series.label(for: index)) }
-                }
-            }
-        }
     }
 
     private var positionSection: some View {
@@ -263,23 +212,7 @@ struct StockDetailView: View {
         }
     }
 
-    // MARK: - Chart helpers
-
-    private func areaGradient(_ tint: Color) -> LinearGradient {
-        LinearGradient(
-            colors: [tint.opacity(0.25), tint.opacity(0.02)],
-            startPoint: .top,
-            endPoint: .bottom
-        )
-    }
-
-    private func yDomain(for values: [Double]) -> (Double, Double) {
-        let lo = values.min() ?? 0
-        let hi = values.max() ?? 0
-        let span = hi - lo
-        let pad = span > 0 ? span * 0.12 : max(hi * 0.01, 1)
-        return (lo - pad, hi + pad)
-    }
+    // MARK: - Helpers
 
     private func changeColor(_ value: Double) -> Color {
         value > 0 ? .green : (value < 0 ? .red : .secondary)

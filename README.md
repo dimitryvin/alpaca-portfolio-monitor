@@ -51,7 +51,9 @@ Or push a `v*` tag to build, sign, notarize, and publish automatically via GitHu
 - Menu bar text: portfolio value + today's change %, tinted green/red
   (e.g. `$12,345  ▲1.2%`), shown immediately on launch.
 - **Portfolio** tab:
-  - Equity chart and a range picker (1D / 1W / 1M / 3M / 1Y / All).
+  - Equity chart and a range picker (1D / 1W / 1M / 3M / 1Y / All). The 1D chart spans
+    the full trading session, so the line grows across it through the day. Hover the
+    chart to read the value at any point in time.
   - Key stats: equity, today's P/L ($ and %), cash, buying power.
   - Positions list: market value and **unrealized P/L since entry** per holding.
 - **Trades** tab: executed fills, newest first, with **realized P/L on sells**
@@ -103,7 +105,8 @@ xcodebuild test -project AlpacaPortfolioMonitor.xcodeproj -scheme AlpacaPortfoli
 `AlpacaMonitorMobile` is an iPhone app (SwiftUI + The Composable Architecture) that shows
 the same Portfolio (equity chart, key stats, positions) and Trades (realized P/L) as the
 Mac app. It shares the domain layer in `Shared/` with the Mac app — the models, the
-read-only `AlpacaClient`, and the trade builder are compiled into both.
+read-only `AlpacaClient`, and the trade builder are compiled into both. Long-press a chart,
+then drag, to scrub it: the header shows the value and change at that point in time.
 
 **Pairing.** On the Mac, open the popover → gear menu → **Connect iPhone…** to show a QR
 code. In the iOS app, scan it. The QR carries your Alpaca API key/secret (a versioned JSON
@@ -169,9 +172,10 @@ and delivers to TestFlight automatically.
 ```
 project.yml                 XcodeGen spec (the .xcodeproj is generated, not committed)
 Shared/                     Cross-platform domain, compiled into BOTH apps
-  Models/                   Codable models, Credentials, chart range mapping
+  Models/                   Codable models, Credentials, chart range/domain/scrub mapping
   Services/                 Read-only Alpaca client + trade builder
   Pairing/                  PairingPayload — the QR pairing codec
+  Views/                    Chart scrubbing (hover on macOS, long-press drag on iOS)
   Formatters.swift          Currency/percent formatting
 Sources/                    macOS menu-bar app
   App/                      @main app + Info.plist

@@ -6,6 +6,10 @@ import SwiftUI
 struct StockDetailView: View {
     @Bindable var store: StoreOf<StockDetailFeature>
 
+    /// The chart point being scrubbed. Transient view state: it lives only for
+    /// the duration of a gesture, so it stays out of the feature's state.
+    @State private var scrub: ChartSelection?
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -28,19 +32,32 @@ struct StockDetailView: View {
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        let figures = headerFigures
+        return VStack(alignment: .leading, spacing: 4) {
             Text(store.displayName)
                 .font(.headline)
                 .foregroundStyle(.secondary)
-            Text(CurrencyFormatter.full.string(from: store.position.currentPrice))
+            Text(CurrencyFormatter.full.string(from: figures.price))
                 .font(.system(.largeTitle, design: .rounded).weight(.bold))
+                .contentTransition(.numericText())
             HStack(spacing: 6) {
-                Image(systemName: store.position.changeTodayPct >= 0 ? "arrow.up.right" : "arrow.down.right")
-                Text("\(PercentFormatter.signed(store.position.changeTodayPct)) today")
+                Image(systemName: figures.percent >= 0 ? "arrow.up.right" : "arrow.down.right")
+                Text(figures.caption)
             }
             .font(.subheadline.weight(.medium))
-            .foregroundStyle(Color.forChange(store.position.changeTodayPct))
+            .foregroundStyle(Color.forChange(figures.percent))
         }
+    }
+
+    /// The headline price and change: the scrubbed point while the chart is
+    /// being scrubbed (measured from the start of the range), else the live quote.
+    private var headerFigures: (price: Double, percent: Double, caption: String) {
+        guard let scrub else {
+            let percent = store.position.changeTodayPct
+            return (store.position.currentPrice, percent, "\(PercentFormatter.signed(percent)) today")
+        }
+        let percent = scrub.change(from: store.points.first?.equity ?? scrub.value).percent
+        return (scrub.value, percent, PercentFormatter.signed(percent))
     }
 
     private var rangePicker: some View {
@@ -56,9 +73,11 @@ struct StockDetailView: View {
         EquityChartView(
             points: store.points,
             change: store.chartChange,
-            range: store.selectedRange
+            range: store.selectedRange,
+            selection: $scrub
         )
-        .frame(height: 220)
+        // Room for the scrub readout band above the plot.
+        .frame(height: 220 + ChartScrubMetrics.readoutHeight)
         .overlay {
             if store.isChartLoading {
                 ProgressView()
