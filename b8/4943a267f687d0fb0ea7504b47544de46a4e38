@@ -1,0 +1,41 @@
+Tests/ChartScrubTests.swift
+  s_60f02011d4db6b::t_e822264e319609 1-131,155-156
+  s_60f02011d4db6b::t_1b8e05e18f5e83 132-154
+Shared/Models/ChartScrub.swift
+  s_60f02011d4db6b::t_cc0544e3f0bc24 1-12,20-92
+  s_60f02011d4db6b::t_a730b1f5161482 13-19
+Shared/Views/ChartScrubbing.swift
+  s_60f02011d4db6b::t_3d18a9224aa519 60
+  s_60f02011d4db6b::t_2f13b9f3591913 77-109
+  s_60f02011d4db6b::t_4744db73dd50b5 1-59,61-76,110-177
+Sources/Views/EquityLineChart.swift
+  s_60f02011d4db6b::t_12f58d783e6f1c 1-129
+README.md
+  s_60f02011d4db6b::t_34143eca7fc995 54-56,108-109,175,178
+Sources/Views/PortfolioChartView.swift
+  s_60f02011d4db6b::t_2cf9c7c77f681d 20-22,39
+Sources/Views/StockDetailView.swift
+  s_60f02011d4db6b::t_d2e68884a9ca47 28-29,104,215
+iOSApp/Views/EquityChartView.swift
+  s_60f02011d4db6b::t_d96f0a6788a36d 12-14,17-30,32-35,38-46,48-58,61,67-69,74-79,81-91,104-111
+iOSApp/Views/PortfolioView.swift
+  s_60f02011d4db6b::t_0b8813c9936014 9-12,28-29,31-32,70-71,75-77,80,95-106
+iOSApp/Views/StockDetailView.swift
+  s_60f02011d4db6b::t_93960f7264469a 9-12,35-36,40,42,44-45,48-57,59-60,76-77,79-80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "b84943a267f687d0fb0ea7504b47544de46a4e38",
+  "prompts": {},
+  "sessions": {
+    "s_60f02011d4db6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a6b5557d-2c26-4a2e-be2a-77000ad46c54",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Dimitry Vinogradov <dimitryvin@gmail.com>"
+    }
+  }
+}
